@@ -696,14 +696,14 @@ volatile bool execute = true;
 
 - (void) setArm9ImageURL:(NSURL *)fileURL
 {
-	const char *filePath = (fileURL != NULL) ? [[fileURL path] cStringUsingEncoding:NSUTF8StringEncoding] : NULL;
+	const char *filePath = (fileURL != NULL) ? [fileURL fileSystemRepresentation] : NULL;
 	execControl->SetARM9ImagePath(filePath);
 }
 
 - (NSURL *) arm9ImageURL
 {
 	const char *filePath = execControl->GetARM9ImagePath();
-	return [NSURL fileURLWithPath:[NSString stringWithCString:filePath encoding:NSUTF8StringEncoding]];
+	return [NSURL fileURLWithFileSystemRepresentation:filePath isDirectory:NO relativeToURL:nil];
 }
 
 - (void) setArm7ImageURL:(NSURL *)fileURL

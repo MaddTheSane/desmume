@@ -202,9 +202,19 @@
 - (void) loadPreviewImage:(NSImage *)previewImage
 {
 	NSArray *imageRepArray = [previewImage representations];
-	const NSBitmapImageRep *imageRep = [imageRepArray objectAtIndex:0];
+	NSBitmapImageRep *imageRep = [imageRepArray objectAtIndex:0];
 	const size_t previewWidth = (GLsizei)[previewImage size].width;
 	const size_t previewHeight = (GLsizei)[previewImage size].height;
+	if (![imageRep isKindOfClass:[NSBitmapImageRep class]]) {
+		// Create a temp image
+		imageRep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL pixelsWide:previewWidth pixelsHigh:previewHeight bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSDeviceRGBColorSpace bytesPerRow:previewWidth*4 bitsPerPixel:32];
+		NSGraphicsContext *tmpContext = [NSGraphicsContext graphicsContextWithBitmapImageRep:imageRep];
+		[NSGraphicsContext saveGraphicsState];
+		NSGraphicsContext.currentContext = tmpContext;
+		[previewImage drawInRect:NSMakeRect(0, 0, previewWidth, previewHeight)];
+		[NSGraphicsContext restoreGraphicsState];
+		[tmpContext flushGraphics];
+	}
 	
 	// When an NSImage is loaded from file, it is loaded as ABGR (or RGBA for big-endian).
 	// However, the OpenGL blitter takes BGRA format. Therefore, we need to convert the
@@ -215,7 +225,7 @@
 	{
 		const uint32_t color = bitmapData[i];
 		
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) || defined(__aarch64__)
 		bitmapData[i]	=           0xFF000000         | // lA
 						  ((color & 0x00FF0000) >> 16) | // lB -> lR
 						   (color & 0x0000FF00)        | // lG
@@ -257,7 +267,7 @@
 	if (!isPreviewImageLoaded)
 	{
 		// Load the preview image.
-		NSImage *previewImage = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"VideoFilterPreview_64x64" ofType:@"png"]];
+		NSImage *previewImage = [[NSImage imageNamed:@"VideoFilterPreview_64x64"] retain];
 		[self loadPreviewImage:previewImage];
 		[previewImage release];
 		
@@ -328,7 +338,7 @@
 	{
 		[self release];
 		self = nil;
-		return self;
+		return nil;
 	}
 	
 	firmwareMACAddressString = @"00:09:BF:FF:FF:FF";
@@ -421,7 +431,7 @@
 #endif
 }
 
-- (void) chooseRomForAutoloadDidEnd:(NSOpenPanel *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+- (void) chooseRomForAutoloadDidEnd:(NSOpenPanel *)sheet returnCode:(NSModalResponse)returnCode contextInfo:(void *)contextInfo
 {
 	[sheet orderOut:self];
 	
@@ -430,7 +440,7 @@
 	[[NSUserDefaults standardUserDefaults] setInteger:ROMAUTOLOADOPTION_CHOOSE_ROM forKey:@"General_AutoloadROMOption"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	if (returnCode == NSCancelButton)
+	if (returnCode == NSModalResponseCancel)
 	{
 		[[NSUserDefaults standardUserDefaults] setInteger:ROMAUTOLOADOPTION_LOAD_NONE forKey:@"General_AutoloadROMOption"];
 		return;
@@ -479,11 +489,11 @@
 #endif
 }
 
-- (void) chooseAdvansceneDatabaseDidEnd:(NSOpenPanel *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+- (void) chooseAdvansceneDatabaseDidEnd:(NSOpenPanel *)sheet returnCode:(NSModalResponse)returnCode contextInfo:(void *)contextInfo
 {
 	[sheet orderOut:self];
 	
-	if (returnCode == NSCancelButton)
+	if (returnCode == NSModalResponseCancel)
 	{
 		return;
 	}
@@ -529,11 +539,11 @@
 #endif
 }
 
-- (void) chooseCheatDatabaseDidEnd:(NSOpenPanel *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+- (void) chooseCheatDatabaseDidEnd:(NSOpenPanel *)sheet returnCode:(NSModalResponse)returnCode contextInfo:(void *)contextInfo
 {
 	[sheet orderOut:self];
 	
-	if (returnCode == NSCancelButton)
+	if (returnCode == NSModalResponseCancel)
 	{
 		return;
 	}

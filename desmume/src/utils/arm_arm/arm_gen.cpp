@@ -3,7 +3,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef USE_POSIX_MEMALIGN
 #include <malloc.h>
+#endif
 #include "arm_gen.h"
 
 #ifdef _3DS

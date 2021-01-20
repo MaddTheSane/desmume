@@ -1348,7 +1348,7 @@ ClientAVCaptureError FFmpegFileStream::WriteOneFrame(const AVStreamWriteParam &p
 	param.refObject					= newCaptureObject;
 	param.sharedData				= [self sharedData];
 	param.formatID					= [self formatID];
-	param.savePath					= std::string([savePath cStringUsingEncoding:NSUTF8StringEncoding]);
+	param.savePath					= std::string([savePath fileSystemRepresentation]);
 	param.romName					= std::string([romName cStringUsingEncoding:NSUTF8StringEncoding]);
 	param.useDeposterize			= [self useDeposterize] ? true : false;
 	param.outputFilterID			= (OutputFilterTypeID)[self outputFilterID];
@@ -1381,7 +1381,7 @@ ClientAVCaptureError FFmpegFileStream::WriteOneFrame(const AVStreamWriteParam &p
 	NSString *fileNameNSString = [[dateFormatter stringFromDate:[NSDate date]] stringByAppendingString:[NSString stringWithCString:param.romName.c_str() encoding:NSUTF8StringEncoding]];
 	[dateFormatter release];
 	
-	std::string fileName = param.savePath + "/" + std::string([fileNameNSString cStringUsingEncoding:NSUTF8StringEncoding]);
+	std::string fileName = [[savePath stringByAppendingPathComponent:fileNameNSString] fileSystemRepresentation];
 	
 	// Create the output file stream.
 	/*

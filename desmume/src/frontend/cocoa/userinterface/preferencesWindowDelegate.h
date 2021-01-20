@@ -131,11 +131,11 @@ class OGLImage;
 - (IBAction) changePrefView:(id)sender;
 
 - (IBAction) chooseAdvansceneDatabase:(id)sender;
-- (void) chooseAdvansceneDatabaseDidEnd:(NSOpenPanel *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+- (void) chooseAdvansceneDatabaseDidEnd:(NSOpenPanel *)sheet returnCode:(NSModalResponse)returnCode contextInfo:(void *)contextInfo;
 - (IBAction) chooseRomForAutoload:(id)sender;
-- (void) chooseRomForAutoloadDidEnd:(NSOpenPanel *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+- (void) chooseRomForAutoloadDidEnd:(NSOpenPanel *)sheet returnCode:(NSModalResponse)returnCode contextInfo:(void *)contextInfo;
 - (IBAction) chooseCheatDatabase:(id)sender;
-- (void) chooseCheatDatabaseDidEnd:(NSOpenPanel *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+- (void) chooseCheatDatabaseDidEnd:(NSOpenPanel *)sheet returnCode:(NSModalResponse)returnCode contextInfo:(void *)contextInfo;
 
 - (IBAction) selectDisplayRotation:(id)sender;
 - (void) updateDisplayRotationMenu:(double)displayRotation;

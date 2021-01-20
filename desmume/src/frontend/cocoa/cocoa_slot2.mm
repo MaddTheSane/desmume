@@ -166,7 +166,7 @@
 {
 	if (fileURL != nil)
 	{
-		GBACartridge_RomPath = [[fileURL path] cStringUsingEncoding:NSUTF8StringEncoding];
+		GBACartridge_RomPath = [fileURL fileSystemRepresentation];
 	}
 	else
 	{
@@ -183,7 +183,7 @@
 {
 	if (fileURL != nil)
 	{
-		GBACartridge_SRAMPath = [[fileURL path] cStringUsingEncoding:NSUTF8StringEncoding];
+		GBACartridge_SRAMPath = [fileURL fileSystemRepresentation];
 	}
 	else
 	{
